@@ -15,6 +15,34 @@ export const getTask = createAsyncThunk("getTask", async () => {
   }
 });
 
+export const addTask = createAsyncThunk("addTask", async (payload) => {
+  console.log(payload,"payload")
+  try {
+    const res = await axios.post(`http://localhost:8080/users/create`,payload);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+export const updateTask = createAsyncThunk("updateTask", async (id) => {
+  try {
+    const res = await axios.put(`http://localhost:8080/users/update/${id}`);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+export const deleteTask = createAsyncThunk("deleteTask", async (id) => {
+  try {
+    const res = await axios.put(`http://localhost:8080/users/delete/${id}`);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 const taskSlice = createSlice({
   name: "Tasks",
   initialState: initalState,
@@ -28,6 +56,17 @@ const taskSlice = createSlice({
       state.tasks = action.payload;
     },
     [getTask.rejected]: (state) => {
+      state.loading = false;
+    },
+    [addTask.pending]: (state) => {
+      state.loading = true;
+    },
+    [addTask.fulfilled]: (state, action) => {
+      console.log(action.payload);
+      state.loading = false;
+      state.tasks = action.payload;
+    },
+    [addTask.rejected]: (state) => {
       state.loading = false;
     },
   },
