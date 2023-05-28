@@ -3,6 +3,7 @@ import { useTable, useRowSelect } from "react-table";
 import { useDispatch, useSelector } from "react-redux";
 import { getTask } from "../../redux/features/taskSlice";
 import { COLUMNS, GROUP_COLUMNS } from "./columns";
+import { Checkbox } from "./Checkbox";
 
 const TaskItem = () => {
   const tasks = useSelector((store) => store.tasks);
@@ -28,9 +29,26 @@ const TaskItem = () => {
       columns: columns,
       data: tasks,
     },
-    useRowSelect
+    useRowSelect,
+    (hooks) => {
+      hooks.visibleColumns.push((columns) => {
+        return [
+          {
+            id: "selection",
+            Header: ({ getToggleAllRowsSelectedProps }) => (
+              <Checkbox {...getToggleAllRowsSelectedProps()} />
+            ),
+            Cell: ({ row }) => (
+              <Checkbox {...row.getToggleRowSelectedProps()} />
+            ),
+          },
+          ...columns,
+        ];
+      });
+    }
   );
-
+  console.log(selectedFlatRows, "selectedFlatRows");
+  console.log(rows, "rows");
   const firstPageRows = rows.slice(0, 5);
 
   return (
@@ -70,16 +88,18 @@ const TaskItem = () => {
             );
           })}
         </tbody>
-        {/* <tfoot className="border-4 border-gray-500 ">
-          {footerGroups.map((footerGroup)=>(
-            <tr className="border-4 border-gray-500" {...footerGroup.getFooterGroupProps()}>
-              {footerGroup.headers.map((column)=>(
-                <td className="border-4 border-gray-500" {...column.getFooterProps()}>{column.render('Footer')}</td>
-              ))}
-            </tr>
-          ))}
-        </tfoot> */}
       </table>
+      <pre>
+        <code>
+          {JSON.stringify(
+            {
+              selectedFlatRows: selectedFlatRows.map((row) => row.original),
+            },
+            null,
+            2
+          )}
+        </code>
+      </pre>
     </div>
   );
 };

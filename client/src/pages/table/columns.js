@@ -22,19 +22,16 @@ export const GROUP_COLUMNS = [
     columns: [
       {
         Header: "Name",
-        Footer: "Name",
         accessor: "name",
       },
       {
         Header: "Description",
-        Footer: "Description",
         accessor: "desc",
       },
     ],
   },
   {
     Header: "Assign To",
-    Footer: "Assign To",
     accessor: "assignTo",
   },
 ];
