@@ -1,13 +1,15 @@
 import React, { useEffect, useMemo } from "react";
 import { useTable, useRowSelect } from "react-table";
 import { useDispatch, useSelector } from "react-redux";
-import { getTask } from "../../redux/features/taskSlice";
+import { deleteTask, getTask } from "../../redux/features/taskSlice";
 import { COLUMNS, GROUP_COLUMNS } from "./columns";
 import { Checkbox } from "./Checkbox";
+import { ClipLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
 
 const TaskItem = () => {
-  const tasks = useSelector((store) => store.tasks);
-  console.log(tasks);
+  const navigate = useNavigate();
+  const { tasks, loading } = useSelector((store) => store);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getTask());
@@ -47,12 +49,58 @@ const TaskItem = () => {
       });
     }
   );
-  console.log(selectedFlatRows, "selectedFlatRows");
-  console.log(rows, "rows");
-  const firstPageRows = rows.slice(0, 5);
+
+  const handleDelete = () => {
+    if (selectedFlatRows.length === 1) {
+      const selectedItemsList = selectedFlatRows?.map((item) => item?.original);
+      const selectedItem = selectedItemsList?.find((item) => item);
+      dispatch(deleteTask(selectedItem._id));
+    } else {
+      alert("Please select one item");
+    }
+  };
+
+  const handleUpdate = () => {
+    if (selectedFlatRows.length === 1) {
+      const selectedItemsList = selectedFlatRows?.map((item) => item?.original);
+      const selectedItem = selectedItemsList?.find((item) => item);
+      navigate(`/update/${selectedItem._id}`);
+    } else {
+      alert("Please select one item");
+    }
+  };
+
+  const override = {
+    display: "block",
+    margin: "0 auto",
+  };
+
+  if (loading) {
+    return (
+      <ClipLoader
+        cssOverride={override}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      />
+    );
+  }
 
   return (
     <div className=" flex flex-col p-12 ">
+      <div className="flex flex-row">
+        <button
+          onClick={handleDelete}
+          className="border py-1 px-4 text text-sm rounded-sm"
+        >
+          Delete
+        </button>
+        <button
+          onClick={handleUpdate}
+          className="border py-1 px-4 text text-sm rounded-sm"
+        >
+          Update
+        </button>
+      </div>
       <table className="border border-gray-500" {...getTableProps()}>
         <thead className="border-4 border-gray-500 bg-blue-800 text-white">
           {headerGroups.map((headerGroup) => (
@@ -72,7 +120,7 @@ const TaskItem = () => {
           ))}
         </thead>
         <tbody className="border-4 border-gray-500" {...getTableBodyProps()}>
-          {firstPageRows.map((row) => {
+          {rows.map((row) => {
             prepareRow(row);
             return (
               <tr className="border-4 border-gray-500" {...row.getRowProps()}>

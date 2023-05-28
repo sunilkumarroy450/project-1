@@ -11,12 +11,13 @@ const EditTaskForm = () => {
     validationSchema: userSchema,
     onSubmit: (values, { resetForm }) => {
       console.log("submitted");
-      console.log()
+      console.log();
     },
   });
   return (
-    <div>
-      <form onSubmit={formik.handleSubmit} className="border">
+    <div className="flex flex-col  items-center p-12 mx-sm:p-4">
+      <h2 className="text text-2xl font-semibold m-2">update task</h2>
+      <form onSubmit={formik.handleSubmit} className=" flex flex-col p-12 border rounded-md ">
         <div>
           <label htmlFor="name">name</label>
           <br />
@@ -24,7 +25,8 @@ const EditTaskForm = () => {
             type="text"
             name="name"
             value={formik.values.name}
-            className="border"
+            onChange={formik.handleChange}
+            className="border p-2 rounded-md"
           />
         </div>
         <br />
@@ -35,7 +37,8 @@ const EditTaskForm = () => {
             type="text"
             name="desc"
             value={formik.values.desc}
-            className="border"
+            className="border p-2 rounded-md"
+            onChange={formik.handleChange}
           />
         </div>
         <br />
@@ -46,12 +49,16 @@ const EditTaskForm = () => {
             type="text"
             name="assignTo"
             value={formik.values.assignTo}
-            className="border"
+            onChange={formik.handleChange}
+            className="border p-2 rounded-md"
           />
         </div>
         <br />
-        <div>
-          <button type="submit" className="border">
+        <div className="flex flex-col items-start">
+          <button
+            type="submit"
+            className="border py-2 px-3 text-xs text-bold rounded-md text-cyan-50 bg-blue-500"
+          >
             submit
           </button>
         </div>
