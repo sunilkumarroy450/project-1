@@ -21,7 +21,7 @@ const TaskItem = () => {
   }, []);
 
   //table
-  const columns = useMemo(() => GROUP_COLUMNS, []);
+  const columns = useMemo(() => GROUP_COLUMNS, [GROUP_COLUMNS]);
   const data = useMemo(() => tasks, [tasks]);
   // console.log(data, "memoised Data");
   const {
