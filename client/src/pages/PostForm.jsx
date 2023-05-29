@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { userSchema } from "../schema/user.schema";
 import { useDispatch, useSelector } from "react-redux";
 import { addTask, getTask } from "../redux/features/taskSlice";
+import { ClipLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
 const PostForm = () => {
-  const task = useSelector((store) => store);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  // useEffect(() => {
-  //   dispatch(getTask());
-  // }, []);
-  console.log(task, "task");
+  const navigate = useNavigate();
+
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -18,16 +18,34 @@ const PostForm = () => {
       assignTo: "",
     },
     validationSchema: userSchema,
-    onSubmit: (values, { resetForm }) => {
+    onSubmit: async(values, { resetForm }) => {
       const payload = {
         name: values.name,
         desc: values.desc,
         assignTo: values.assignTo,
       };
       dispatch(addTask(payload));
+      // dispatch(getTask())
       resetForm();
+      alert(`Task successfully created`);
+      navigate("/");
     },
   });
+
+  const override = {
+    display: "block",
+    margin: "0 auto",
+  };
+
+  if (loading) {
+    return (
+      <ClipLoader
+        cssOverride={override}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      />
+    );
+  }
   return (
     <div className="flex flex-row w-full items-center h-screen">
       <div className="w-6/12  h-screen m-auto content-center max-sm:w-full">

@@ -18,7 +18,8 @@ router.post("/create", async (req, res) => {
     const { name, desc, assignTo } = req.body;
     const user = new User({ name, desc, assignTo });
     await user.save();
-    return res.status(201).send("User created successfully");
+    console.log(user)
+    return res.status(201).send(user);
   } catch (error) {
     console.log(error);
     return res.status(500).send(error);
@@ -29,7 +30,7 @@ router.post("/create", async (req, res) => {
 router.get("/get/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.findById({ _id: id });
+    const user = await User.findOne({ _id: id });
     return res.status(200).send(user);
   } catch (error) {
     console.log(error);

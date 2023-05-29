@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTable, useRowSelect } from "react-table";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteTask, getTask } from "../../redux/features/taskSlice";
@@ -9,15 +9,20 @@ import { useNavigate } from "react-router-dom";
 
 const TaskItem = () => {
   const navigate = useNavigate();
+  // const [loading, setLoading] = useState(false);
   const { tasks, loading } = useSelector((store) => store);
   const dispatch = useDispatch();
   useEffect(() => {
+    // setLoading(true)
+    // setTimeout(() => {
     dispatch(getTask());
+    // }, 200);
+    // setLoading(false)
   }, []);
 
   //table
   const columns = useMemo(() => GROUP_COLUMNS, []);
-  // const data = useMemo(() => tasks, []);
+  const data = useMemo(() => tasks, [tasks]);
   // console.log(data, "memoised Data");
   const {
     getTableBodyProps,
@@ -29,7 +34,7 @@ const TaskItem = () => {
   } = useTable(
     {
       columns: columns,
-      data: tasks,
+      data,
     },
     useRowSelect,
     (hooks) => {
@@ -50,11 +55,16 @@ const TaskItem = () => {
     }
   );
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedFlatRows.length === 1) {
+      // setLoading(true);
       const selectedItemsList = selectedFlatRows?.map((item) => item?.original);
       const selectedItem = selectedItemsList?.find((item) => item);
       dispatch(deleteTask(selectedItem._id));
+      setTimeout(() => {
+        dispatch(getTask());
+      }, 200);
+      // setLoading(false);
     } else {
       alert("Please select one item");
     }
@@ -62,9 +72,11 @@ const TaskItem = () => {
 
   const handleUpdate = () => {
     if (selectedFlatRows.length === 1) {
+      // setLoading(true);
       const selectedItemsList = selectedFlatRows?.map((item) => item?.original);
       const selectedItem = selectedItemsList?.find((item) => item);
       navigate(`/update/${selectedItem._id}`);
+      // setLoading(false);
     } else {
       alert("Please select one item");
     }
@@ -84,23 +96,31 @@ const TaskItem = () => {
       />
     );
   }
-
   return (
     <div className=" flex flex-col p-12 ">
-      <div className="flex flex-row">
-        <button
-          onClick={handleDelete}
-          className="border py-1 px-4 text text-sm rounded-sm"
-        >
-          Delete
-        </button>
-        <button
-          onClick={handleUpdate}
-          className="border py-1 px-4 text text-sm rounded-sm"
-        >
-          Update
-        </button>
-      </div>
+      {selectedFlatRows.length === 1 && (
+        <div className="flex flex-row ">
+          <button
+            onClick={handleDelete}
+            className="border py-1 px-4 text text-sm rounded-sm max-sm:px-2"
+          >
+            Delete
+          </button>
+          <button
+            onClick={handleUpdate}
+            className="border py-1 px-4 text text-sm rounded-sm max-sm:px-2"
+          >
+            Update
+          </button>
+          <button
+            onClick={() => navigate("/add")}
+            className="border py-1 px-4 text text-sm rounded-sm max-sm:px-2"
+          >
+            Add task
+          </button>
+        </div>
+      )}
+
       <table className="border border-gray-500" {...getTableProps()}>
         <thead className="border-4 border-gray-500 bg-blue-800 text-white">
           {headerGroups.map((headerGroup) => (
@@ -137,7 +157,7 @@ const TaskItem = () => {
           })}
         </tbody>
       </table>
-      <pre>
+      {/* <pre>
         <code>
           {JSON.stringify(
             {
@@ -147,7 +167,7 @@ const TaskItem = () => {
             2
           )}
         </code>
-      </pre>
+      </pre> */}
     </div>
   );
 };
